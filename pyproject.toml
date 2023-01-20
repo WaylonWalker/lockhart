@@ -24,7 +24,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "click",
+  "typer",
   "openai",
   "pyperclip",
 ]
@@ -36,7 +36,7 @@ Issues = "https://github.com/unknown/lockhart/issues"
 Source = "https://github.com/unknown/lockhart"
 
 [project.scripts]
-lockhart = "lockhart.cli:lockhart"
+lockhart = "lockhart.cli:app"
 
 [tool.hatch.version]
 path = "lockhart/__about__.py"
