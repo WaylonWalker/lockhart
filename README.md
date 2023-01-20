@@ -148,6 +148,8 @@ def update_item(item_id: int, item: Item):
     results = {"item_id": item_id, "item": item}
     return results
 
+# refactor the following code to accept a parameter item_name
+
 # after
 @app.put("/items/{item_id}")
 def update_item(item_id: int, item_name: str, item: Item):
