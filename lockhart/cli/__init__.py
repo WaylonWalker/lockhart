@@ -5,7 +5,7 @@
 import pyperclip
 import typer
 
-from lockhart.prompts import write_docstring
+from lockhart.prompts import refactor_code, write_docstring
 
 # @click.group(
 #     context_settings={"help_option_names": ["-h", "--help"]},
@@ -55,6 +55,12 @@ def main(
 @app.command()
 def docstring():
     code = pyperclip.paste()
-    # code = "\n".join(code)
     completion = write_docstring(code)
+    pyperclip.copy(completion)
+
+
+@app.command()
+def refactor():
+    code = pyperclip.paste()
+    completion = refactor_code(code, input("refactor the following code to "))
     pyperclip.copy(completion)
