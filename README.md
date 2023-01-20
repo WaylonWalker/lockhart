@@ -18,6 +18,14 @@ pip install lockhart
 pipx install lockhart
 ```
 
+You will need an openai key, you can obtain one from their
+[website](https://beta.openai.com/account/api-keys). Once you have it then set
+your `OPENAI_API_KEY` environment variable.
+
+```bash
+export OPENAI_API_KEY='sk-***'
+```
+
 Lockhart it currently very crude, it works out of the clipboard. Copy a
 function to your clipboard, run `lockhart docstring` then paste the docstring
 in.
