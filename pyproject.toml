@@ -31,9 +31,9 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-Documentation = "https://github.com/unknown/lockhart#readme"
-Issues = "https://github.com/unknown/lockhart/issues"
-Source = "https://github.com/unknown/lockhart"
+Documentation = "https://github.com/waylonwalker/lockhart#readme"
+Issues = "https://github.com/waylonwalker/lockhart/issues"
+Source = "https://github.com/walker/lockhart"
 
 [project.scripts]
 lockhart = "lockhart.cli:app"
