@@ -70,13 +70,20 @@ def refactor_code(code, prompt):
 
     prompt = f"refactor the following code to {prompt}\n\n{code}"
 
+    print(f"generating a response for \n\n{prompt}")
+    print("-" * 80)
+    print()
+
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
         temperature=0.7,
-        max_tokens=500,
+        max_tokens=1500,
     )
-    return response["choices"][0]["text"]
+    text = response["choices"][0]["text"]
+    print(text)
+
+    return text
 
 
 def write_blog(code):
