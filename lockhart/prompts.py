@@ -47,7 +47,7 @@ then followed by any of the following sections sections if they apply to this fu
         stop=["#", '"""'],
     )
     text = response["choices"][0]["text"]
-    text = textwrap.indent(f'"""\n{text}\n"""', "   ")
+    text = textwrap.indent(f'"""\n{text}\n"""', "    ")
     print(text)
     return text
 
@@ -56,6 +56,19 @@ def write_test(code):
 
     parsed = parse_function(code)
     prompt = f'Please write a test from the following function using pytest: ```{parsed.name}``` with the following signature {parsed.args}, and the following source code {code}, do not return the full function, only return the docstring surrounded by `"""`, indent the docstring to match the function indentation level'
+
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        temperature=0.7,
+        max_tokens=500,
+    )
+    return response["choices"][0]["text"]
+
+
+def refactor_code(code, prompt):
+
+    prompt = f"refactor the following code to {prompt}\n\n{code}"
 
     response = openai.Completion.create(
         engine="text-davinci-003",
@@ -107,7 +120,7 @@ def parse_function(code: str) -> Function:
     name = None
 
     for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef):
+        if isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef):
             name = node.name
             args = [
                 f"{arg.arg}:"  # {arg.annotation.value}"
