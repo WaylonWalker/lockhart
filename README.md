@@ -1,3 +1,5 @@
+<img src="https://user-images.githubusercontent.com/22648375/213756335-5695774d-fdf6-4afd-920f-36da7e2decf3.png" alt="Markata" width="250" align=right>
+
 # Lockhart
 
 [![PyPI - Version](https://img.shields.io/pypi/v/lockhart.svg)](https://pypi.org/project/lockhart)
