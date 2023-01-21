@@ -80,16 +80,4 @@ def run(
     ),
 ):
     result = prompts.run_configured_prompt(prompt, dry_run, edit)
-    console.print(result)
-
-    # @app.command()
-    # def docstring():
-    #     code = pyperclip.paste()
-    #     completion = write_docstring(code)
-    #     pyperclip.copy(completion)
-
-    # @app.command()
-    # def refactor():
-    #     code = pyperclip.paste()
-    #     completion = refactor_code(code, input("refactor the following code to "))
-    #     pyperclip.copy(completion)
+    console.print(result["choices"][0]["text"])
