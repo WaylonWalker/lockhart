@@ -50,6 +50,7 @@ dependencies = [
   "debugpy",
   "pytest",
   "pytest-cov",
+  "pytest-mock",
 ]
 [tool.hatch.envs.default.scripts]
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=lockhart --cov=tests {args}"
