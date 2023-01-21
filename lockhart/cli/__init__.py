@@ -2,20 +2,12 @@
 #
 # SPDX-License-Identifier: MIT
 
-import pyperclip
+
 import typer
 
-from lockhart.prompts import refactor_code, write_docstring
-
-# @click.group(
-#     context_settings={"help_option_names": ["-h", "--help"]},
-#     invoke_without_command=True,
-# )
-# @click.version_option(version=__version__, prog_name="lockhart")
-# @click.pass_context
-# def lockhart(ctx: click.Context):
-#     ...
-
+from lockhart import prompts
+from lockhart.config import config as configuration
+from lockhart.console import console
 
 app = typer.Typer(
     name="lockhart",
@@ -52,15 +44,52 @@ def main(
     return
 
 
-@app.command()
-def docstring():
-    code = pyperclip.paste()
-    completion = write_docstring(code)
-    pyperclip.copy(completion)
+config_app = typer.Typer()
+prompt_app = typer.Typer()
+app.add_typer(config_app)
+app.add_typer(prompt_app)
 
 
-@app.command()
-def refactor():
-    code = pyperclip.paste()
-    completion = refactor_code(code, input("refactor the following code to "))
-    pyperclip.copy(completion)
+@config_app.callback()
+def config():
+    "configuration cli"
+
+
+@config_app.command()
+def show():
+    console.print(configuration)
+
+
+@prompt_app.callback()
+def prompt():
+    "prompt cli"
+
+
+@prompt_app.command()
+def list():
+    for prompt in configuration.get("prompts", {}).keys():
+        console.print(prompt)
+
+
+@prompt_app.command()
+def run(
+    prompt: str = typer.Argument(..., help="the configured prompt to run"),
+    dry_run: bool = typer.Option(False, help="run without sending the prompt"),
+    edit: bool = typer.Option(
+        False, help="open the resulting prompt in your editor before running"
+    ),
+):
+    result = prompts.run_configured_prompt(prompt, dry_run, edit)
+    console.print(result)
+
+    # @app.command()
+    # def docstring():
+    #     code = pyperclip.paste()
+    #     completion = write_docstring(code)
+    #     pyperclip.copy(completion)
+
+    # @app.command()
+    # def refactor():
+    #     code = pyperclip.paste()
+    #     completion = refactor_code(code, input("refactor the following code to "))
+    #     pyperclip.copy(completion)

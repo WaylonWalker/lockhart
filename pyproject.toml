@@ -24,9 +24,13 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "typer",
+  "jinja2",
   "openai",
   "pyperclip",
+  "toml",
+  "typer",
+  "pluggy",
+  "rich",
 ]
 dynamic = ["version"]
 
@@ -43,6 +47,7 @@ path = "lockhart/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
+  "debugpy",
   "pytest",
   "pytest-cov",
 ]

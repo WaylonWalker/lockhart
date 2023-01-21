@@ -1,8 +1,107 @@
 import ast
 from collections import namedtuple
+import os
+import subprocess
+import sys
+import tempfile
 import textwrap
+from typing import Optional
 
+from jinja2 import Template
 import openai
+
+from lockhart.config import config
+
+# Python 3.10
+
+
+def load_prompt(prompt: str, config: dict) -> dict:
+    """
+    loads the configuration for the prompt from config.  Finds the
+    corresponding profile and unpacks the prompt config into that profile.
+    """
+    profile_name = config["prompts"]["profile"]
+    profile = config["profiles"]
+    prompt_config = config["prompts"]
+    for key, value in prompt_config.items():
+        if key != "profile":
+            profile = value
+    return profile
+
+
+# here is an example config
+
+{
+    "profiles": {
+        "code": {
+            "engine": "text-davinci-003",
+            "temperature": 0,
+            "max_tokens": 150,
+            "top_p": 1.0,
+            "frequency_penalty": 0.0,
+            "presence_penalty": 0.0,
+        }
+    },
+    "prompts": {
+        "docstring": {
+            "profile": "code",
+            "stop": ["#", '"""'],
+            "prompt": "# Python 3.10\n\n{{code}}\n\n# Please write a high quality python",
+        },
+        "complete-func": {
+            "engine": "text-davinci-003",
+            "temperature": 0,
+            "max_tokens": 500,
+            "top_p": 1.0,
+            "frequency_penalty": 0.0,
+            "presence_penalty": 0.0,
+            "stop": ["xxx", "???"],
+            "prompt": "# python3.10\n\nfill in the following python function to do what the docstring says to do\n\n{{ text }}\n---\n",
+        },
+    },
+}
+
+
+def run_configured_prompt(prompt: str, dry_run: bool, edit: bool) -> Optional[str]:
+
+    # parsed = parse_function(code)
+    text = ""
+    for line in sys.stdin:
+        text = text + line
+
+    prompt = config.get("prompts", {}).get(prompt)
+    template = Template(prompt["prompt"])
+    prompt["prompt"] = template.render(input=input, text=text)
+    if edit:
+        file = tempfile.NamedTemporaryFile(prefix="lockhart")
+        file.write(prompt["prompt"].encode())
+        file.seek(0)
+        editor = os.environ.get("EDITOR", "vim")
+        proc = subprocess.Popen([editor, file.name])
+        res = proc.wait()
+        prompt["prompt"] = file.read().decode()
+        if res != 0:
+            return "editor quit"
+        else:
+            return "editor not quit"
+
+    if prompt is None:
+        raise KeyError(f"{prompt} is not configured")
+
+    if dry_run:
+        return prompt
+
+    response = openai.Completion.create(**prompt)
+    text = response["choices"][0]["text"]
+    return response
+    return text
+
+
+def list_args(func: callable):
+    """lists the arguments that the function takes"""
+    args = func.__code__.co_varnames
+    return args
+    return list(func.__code__.co_varnames)
 
 
 def write_docstring(code):

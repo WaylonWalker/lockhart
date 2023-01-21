@@ -1,0 +1,103 @@
+[profiles.code]
+engine="text-davinci-003"
+temperature=0
+max_tokens=150
+top_p=1.0
+frequency_penalty=0.0
+presence_penalty=0.0
+
+[prompts.docstring]
+profile='code'
+stop=["#", '"""']
+prompt = '''
+# Python 3.10
+
+{{code}}
+
+# Please write a high quality python docstring conforming to the google code style for docstrings for the above code.
+
+The name of the function is: ```{{parsed.name}}```.
+
+It has the following signature {{parsed.args}}.
+
+Do not return the full function.
+Only return the docstring.
+Include an example if you can.
+It should start with a short summary written in an imperative mood.
+followed by a newline.
+followed by a short description.
+followed by another newline.
+then followed by any of the following sections sections if they apply to this function (Args: , Returns: , Raises: , Yields: , Note: , Example: )
+'''
+
+[prompts.complete-func]
+engine="text-davinci-003"
+temperature=0
+max_tokens=500
+top_p=1.0
+frequency_penalty=0.0
+presence_penalty=0.0
+stop=["#", '---']
+prompt = '''
+# python3.10
+
+fill in the following python function to do what the docstring says to do
+
+{{ text }}
+---
+'''
+
+[prompts.complete-func-long]
+engine="text-davinci-003"
+temperature=0
+max_tokens=2000
+top_p=1.0
+frequency_penalty=0.0
+presence_penalty=0.0
+stop=["###", '---']
+prompt = '''
+# python3.10
+
+fill in the following python function to do what the docstring says to do
+
+{{ text }}
+---
+'''
+
+[prompts.generic]
+engine="text-davinci-003"
+temperature=0
+max_tokens=150
+top_p=1.0
+frequency_penalty=0.0
+presence_penalty=0.0
+stop=["#", '"""']
+prompt = '''
+{{ text }}
+""""
+'''
+
+[prompts.generic-creative]
+engine="text-davinci-003"
+temperature=0.8
+max_tokens=150
+top_p=1.0
+frequency_penalty=0.0
+presence_penalty=0.0
+stop=["#", '"""']
+prompt = '''
+{{input('what do you want to do')}}
+
+'''
+
+[prompts.generic-long]
+engine="text-davinci-003"
+temperature=0
+max_tokens=2000
+top_p=1.0
+frequency_penalty=0.0
+presence_penalty=0.0
+stop=["#", '"""']
+prompt = '''
+{{input('what do you want to do')}}
+'''
