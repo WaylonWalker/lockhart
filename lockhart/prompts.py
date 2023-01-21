@@ -16,9 +16,11 @@ def load_prompt(prompt: str) -> dict:
     Loads the configuration for the prompt from config.  Finds the
     corresponding profile and unpacks the prompt config into that profile.
     """
-    profile_name = config["prompts"][prompt]["profile"]
-    profile = copy.deepcopy(config["profiles"][profile_name])
+    profile_name = config["prompts"][prompt].get("profile")
     prompt_config = config["prompts"][prompt]
+    if profile_name is None or profile_name not in config["profiles"]:
+        return prompt_config
+    profile = copy.deepcopy(config["profiles"][profile_name])
     for key, value in prompt_config.items():
         if key != "profile":
             profile.update({key: value})
