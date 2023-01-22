@@ -15,8 +15,9 @@ jobs:
       - uses: waylonwalker/hatch-action@v3
         with:
           before-command: "test-lint"
-          should-publish: false
+          should-publish: False
 
+      - run: ls -laht dist/
       - run: gh release create v$NEW_VERSION -F CHANGELOG.md dist/*.whl dist/*.tar.gz
 
         env:
