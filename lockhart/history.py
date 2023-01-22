@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from pathlib import Path
 import pickle
+from pathlib import Path
 
 from lockhart.console import console
 
