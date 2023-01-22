@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: waylonwalker/hatch-action@v2
+      - uses: waylonwalker/hatch-action@v3
         with:
           before-command: "test-lint"
           should-publish: false
