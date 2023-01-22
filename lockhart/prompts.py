@@ -3,13 +3,15 @@ import os
 import subprocess
 import sys
 import tempfile
+from datetime import datetime
 from typing import Optional
 
-from jinja2 import Template
 import openai
+from jinja2 import Template
 
 from lockhart.config import config
 from lockhart.console import console
+from lockhart.history import load_history, save_history
 
 
 def load_prompt(prompt: str) -> dict:
@@ -28,7 +30,7 @@ def load_prompt(prompt: str) -> dict:
     return profile
 
 
-def run_configured_prompt(prompt: str, dry_run: bool, edit: bool) -> Optional[str]:
+def run_configured_prompt(prompt_name: str, dry_run: bool, edit: bool) -> Optional[str]:
 
     console.log("running prompt")
     text = ""
@@ -38,7 +40,7 @@ def run_configured_prompt(prompt: str, dry_run: bool, edit: bool) -> Optional[st
         text = text + line
     console.log("read stdin")
 
-    prompt = load_prompt(prompt)
+    prompt = load_prompt(prompt_name)
 
     for key in prompt:
         console.log(f"templating {key}: {prompt[key]}")
@@ -74,6 +76,16 @@ def run_configured_prompt(prompt: str, dry_run: bool, edit: bool) -> Optional[st
     api = getattr(openai, prompt.pop("api"))
     response = api.create(**prompt)
     text = response["choices"][0]["text"]
+    history = load_history()
+    history.append(
+        {
+            "prompt_name": prompt_name,
+            "datetime": datetime.now(),
+            "request": prompt,
+            "response": response,
+        }
+    )
+    save_history(history)
     return response
 
 
