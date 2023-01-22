@@ -52,6 +52,7 @@ dependencies = [
   "diskcache",
   "flake8",
   "interrogate",
+  "isort",
   "mypy",
   "pre-commit",
   "pytest",
