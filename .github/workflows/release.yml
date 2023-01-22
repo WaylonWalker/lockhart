@@ -16,9 +16,5 @@ jobs:
         with:
           before-command: "test-lint"
           should-publish: False
-
-      - run: ls -laht dist/
-      - run: gh release create v$NEW_VERSION -F CHANGELOG.md dist/*.whl dist/*.tar.gz
-
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
