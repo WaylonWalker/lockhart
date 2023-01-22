@@ -10,6 +10,8 @@ def save_history(history, history_file=None):
     """Save the history to a file."""
     if history_file is None:
         history_file = get_history_file()
+    if isinstance(history_file, str):
+        history_file = Path(history_file)
     console.log(f"saving\n{history} to {history_file}")
     with history_file.open("wb") as f:
         pickle.dump(history, f)
@@ -20,6 +22,8 @@ def load_history(history_file=None):
     """Load the history from a file."""
     if history_file is None:
         history_file = get_history_file()
+    if isinstance(history_file, str):
+        history_file = Path(history_file)
     if history_file.exists():
         with history_file.open("rb") as f:
             history = pickle.load(f)
