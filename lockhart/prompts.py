@@ -9,6 +9,7 @@ from jinja2 import Template
 import openai
 
 from lockhart.config import config
+from lockhart.console import console
 
 
 def load_prompt(prompt: str) -> dict:
@@ -29,31 +30,49 @@ def load_prompt(prompt: str) -> dict:
 
 def run_configured_prompt(prompt: str, dry_run: bool, edit: bool) -> Optional[str]:
 
+    console.log("running prompt")
     text = ""
+
+    console.log("getting stdin")
     for line in sys.stdin:
         text = text + line
+    console.log("read stdin")
 
     prompt = load_prompt(prompt)
-    template = Template(prompt["prompt"])
-    prompt["prompt"] = template.render(input=input, text=text)
+
+    for key in prompt:
+        console.log(f"templating {key}: {prompt[key]}")
+
+        if isinstance(prompt[key], str):
+            template = Template(prompt[key])
+            prompt[key] = template.render(input=input, text=text)
+
     if edit:
+        editor = os.environ.get("EDITOR", "vim")
+        console.log(f"editing prompt with {editor}")
         file = tempfile.NamedTemporaryFile(prefix="lockhart")
         file.write(prompt["prompt"].encode())
         file.seek(0)
-        editor = os.environ.get("EDITOR", "vim")
         proc = subprocess.Popen([editor, file.name])
-        res = proc.wait()
+        proc.wait()
+        if os.stat(file.name).st_mtime != os.stat(file.name).st_atime:
+            console.log("editor quit")
+            return
+
         prompt["prompt"] = file.read().decode()
-        if res != 0:
-            return "editor quit"
 
     if prompt is None:
         raise KeyError(f"{prompt} is not configured")
 
     if dry_run:
+        console.log("dry run enabled, returning prompt")
         return prompt
 
-    response = openai.Completion.create(**prompt)
+    console.log("prompt: ", prompt)
+    console.log("running completion")
+    # response = openai.Completion.create(**prompt)
+    api = getattr(openai, prompt.pop("api"))
+    response = api.create(**prompt)
     text = response["choices"][0]["text"]
     return response
 

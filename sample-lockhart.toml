@@ -1,10 +1,17 @@
 [profiles.code]
+api='Completion'
 engine="text-davinci-003"
 temperature=0
-max_tokens=150
+max_tokens=500
 top_p=1.0
 frequency_penalty=0.0
 presence_penalty=0.0
+
+[profiles.code-edit]
+api='Edit'
+engine="code-davinci-edit-001"
+temperature=0
+top_p=1.0
 
 [prompts.docstring]
 profile='code'
@@ -31,13 +38,7 @@ then followed by any of the following sections sections if they apply to this fu
 '''
 
 [prompts.complete-func]
-engine="text-davinci-003"
-temperature=0
-max_tokens=500
-top_p=1.0
-frequency_penalty=0.0
-presence_penalty=0.0
-stop=["#", '---']
+profile='code'
 prompt = '''
 # python3.10
 
@@ -48,13 +49,8 @@ fill in the following python function to do what the docstring says to do
 '''
 
 [prompts.complete-func-long]
-engine="text-davinci-003"
-temperature=0
+profile='code'
 max_tokens=2000
-top_p=1.0
-frequency_penalty=0.0
-presence_penalty=0.0
-stop=["###", '---']
 prompt = '''
 # python3.10
 
@@ -66,6 +62,7 @@ fill in the following python function to do what the docstring says to do
 
 [prompts.generic]
 engine="text-davinci-003"
+api='Completion'
 temperature=0
 max_tokens=150
 top_p=1.0
@@ -79,6 +76,7 @@ prompt = '''
 
 [prompts.generic-creative]
 engine="text-davinci-003"
+api='Completion'
 temperature=0.8
 max_tokens=150
 top_p=1.0
@@ -100,4 +98,21 @@ presence_penalty=0.0
 stop=["#", '"""']
 prompt = '''
 {{input('what do you want to do')}}
+'''
+
+[prompts.code-create]
+profile='code-edit'
+input='''
+'''
+instruction='''
+create a python3.10 function to
+'''
+
+[prompts.code-edit]
+profile='code-edit'
+instruction='''
+refactor the following python3.10 code to
+'''
+input='''
+{{text}}
 '''

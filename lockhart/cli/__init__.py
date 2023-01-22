@@ -79,5 +79,10 @@ def run(
         False, help="open the resulting prompt in your editor before running"
     ),
 ):
+    console.log(f"running configured prompt: {prompt}")
     result = prompts.run_configured_prompt(prompt, dry_run, edit)
-    console.print(result["choices"][0]["text"])
+    if result:
+        try:
+            console.print(result["choices"][0]["text"])
+        except KeyError:
+            console.print(result)
