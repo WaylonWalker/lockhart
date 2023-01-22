@@ -12,9 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: waylonwalker/hatch-action@v3
+      - uses: waylonwalker/hatch-action@v2
         with:
           before-command: "test-lint"
+          should-publish: false
+
+      - run: gh release create v$NEW_VERSION -F changelog.md dist/*.whl dist/*.tar.gz
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
