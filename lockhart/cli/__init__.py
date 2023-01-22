@@ -3,12 +3,13 @@
 # SPDX-License-Identifier: MIT
 
 
+from rich.console import Console
 import typer
 
 from lockhart import prompts
 from lockhart.config import config as configuration
 from lockhart.console import console
-from rich.console import Console
+from lockhart.history import load_history
 
 app = typer.Typer(
     name="lockhart",
@@ -47,8 +48,10 @@ def main(
 
 config_app = typer.Typer()
 prompt_app = typer.Typer()
+history_app = typer.Typer()
 app.add_typer(config_app)
 app.add_typer(prompt_app)
+app.add_typer(history_app)
 
 
 @config_app.callback()
@@ -90,3 +93,15 @@ def run(
             Console().print(result["choices"][0]["text"])
         except KeyError:
             Console().print(result)
+
+
+@history_app.callback()
+def history():
+    "history cli"
+
+
+@history_app.command()
+def list(
+    verbose: bool = typer.Option(False, help="show the log messages"),
+):
+    Console().print(load_history())
