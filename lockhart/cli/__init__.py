@@ -79,17 +79,10 @@ def run(
         False, help="open the resulting prompt in your editor before running"
     ),
 ):
+    console.log(f"running configured prompt: {prompt}")
     result = prompts.run_configured_prompt(prompt, dry_run, edit)
-    console.print(result)
-
-    # @app.command()
-    # def docstring():
-    #     code = pyperclip.paste()
-    #     completion = write_docstring(code)
-    #     pyperclip.copy(completion)
-
-    # @app.command()
-    # def refactor():
-    #     code = pyperclip.paste()
-    #     completion = refactor_code(code, input("refactor the following code to "))
-    #     pyperclip.copy(completion)
+    if result:
+        try:
+            console.print(result["choices"][0]["text"])
+        except KeyError:
+            console.print(result)
