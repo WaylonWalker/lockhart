@@ -8,6 +8,7 @@ import typer
 from lockhart import prompts
 from lockhart.config import config as configuration
 from lockhart.console import console
+from rich.console import Console
 
 app = typer.Typer(
     name="lockhart",
@@ -75,14 +76,17 @@ def list():
 def run(
     prompt: str = typer.Argument(..., help="the configured prompt to run"),
     dry_run: bool = typer.Option(False, help="run without sending the prompt"),
+    verbose: bool = typer.Option(False, help="show the log messages"),
     edit: bool = typer.Option(
         False, help="open the resulting prompt in your editor before running"
     ),
 ):
+    if not verbose:
+        console.quiet = True
     console.log(f"running configured prompt: {prompt}")
     result = prompts.run_configured_prompt(prompt, dry_run, edit)
     if result:
         try:
-            console.print(result["choices"][0]["text"])
+            Console().print(result["choices"][0]["text"])
         except KeyError:
-            console.print(result)
+            Console().print(result)
