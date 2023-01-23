@@ -15,6 +15,5 @@ jobs:
       - uses: waylonwalker/hatch-action@v3
         with:
           before-command: "test-lint"
-          should-publish: False
         env:
           GH_TOKEN: ${{ github.token }}
