@@ -1,13 +1,13 @@
 import copy
+from datetime import datetime
 import os
 import subprocess
 import sys
 import tempfile
-from datetime import datetime
 from typing import Optional
 
-import openai
 from jinja2 import Template
+import openai
 
 from lockhart.config import config
 from lockhart.console import console
@@ -36,9 +36,12 @@ def run_configured_prompt(prompt_name: str, dry_run: bool, edit: bool) -> Option
     text = ""
 
     console.log("getting stdin")
-    for line in sys.stdin:
-        text = text + line
-    console.log("read stdin")
+
+    if not sys.stdin.isatty():
+        # if nothing is piped in, sys.stin.read will block forever
+        text = sys.stdin.read()
+
+    console.log(f"read stdin: {text}")
 
     prompt = load_prompt(prompt_name)
 
