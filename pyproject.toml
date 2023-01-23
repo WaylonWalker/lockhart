@@ -96,4 +96,4 @@ exclude_lines = [
 
 [tool.isort]
 profile = "black"
-known_third_party = ["jinja2", "openai", "pytest", "rich", "toml", "tomlkit", "typer"]
+known_third_party = ["jinja2", "openai", "pytest", "rich", "tomlkit", "typer"]
