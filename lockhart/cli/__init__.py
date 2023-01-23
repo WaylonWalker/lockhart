@@ -2,20 +2,12 @@
 #
 # SPDX-License-Identifier: MIT
 
-import pyperclip
+
 import typer
 
-from lockhart.prompts import refactor_code, write_docstring
-
-# @click.group(
-#     context_settings={"help_option_names": ["-h", "--help"]},
-#     invoke_without_command=True,
-# )
-# @click.version_option(version=__version__, prog_name="lockhart")
-# @click.pass_context
-# def lockhart(ctx: click.Context):
-#     ...
-
+from lockhart.cli.config import config_app
+from lockhart.cli.history import history_app
+from lockhart.cli.prompt import prompt_app
 
 app = typer.Typer(
     name="lockhart",
@@ -52,15 +44,6 @@ def main(
     return
 
 
-@app.command()
-def docstring():
-    code = pyperclip.paste()
-    completion = write_docstring(code)
-    pyperclip.copy(completion)
-
-
-@app.command()
-def refactor():
-    code = pyperclip.paste()
-    completion = refactor_code(code, input("refactor the following code to "))
-    pyperclip.copy(completion)
+app.add_typer(config_app)
+app.add_typer(prompt_app)
+app.add_typer(history_app)

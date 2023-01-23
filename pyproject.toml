@@ -24,9 +24,14 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "typer",
+"tomlkit",
+  "jinja2",
   "openai",
   "pyperclip",
+  "toml",
+  "typer",
+  "pluggy",
+  "rich",
 ]
 dynamic = ["version"]
 
@@ -43,13 +48,34 @@ path = "lockhart/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
+  "black",
+  "debugpy",
+  "diskcache",
+  "flake8",
+  "interrogate",
+  "isort",
+  "mypy",
+  "pre-commit",
   "pytest",
   "pytest-cov",
+  "pytest-mock",
+  "seed-isort-config",
 ]
 [tool.hatch.envs.default.scripts]
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=lockhart --cov=tests {args}"
 no-cov = "cov --no-cov {args}"
-test-lint = ""
+lint = "flake8 lockhart"
+format = "black --check lockhart"
+sort-imports = "isort lockhart"
+build-docs = "markata build"
+lint-test = [
+ "lint",
+ "format",
+ "seed-isort-config",
+ "sort-imports",
+ "cov",
+]
+test-lint = "lint-test"
 
 [[tool.hatch.envs.test.matrix]]
 python = ["37", "38", "39", "310", "311"]
@@ -67,3 +93,7 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
+
+[tool.isort]
+profile = "black"
+known_third_party = ["jinja2", "openai", "pytest", "rich", "tomlkit", "typer"]

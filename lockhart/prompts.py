@@ -1,164 +1,119 @@
-import ast
-from collections import namedtuple
-import textwrap
+import copy
+from datetime import datetime
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import time
+from typing import Optional
 
+from jinja2 import Template
 import openai
+import tomlkit
+
+from lockhart.config import config
+from lockhart.console import console
+from lockhart.history import load_history, save_history
 
 
-def write_docstring(code):
-
-    parsed = parse_function(code)
-    prompt = f'''
-# Python 3.10
-
-{code}
-
-# Please write a high quality python docstring conforming to the google code style for docstrings for the above code.
-
-The name of the function is: ```{parsed.name}```.
-
-It has the following signature {parsed.args}.
-
-Do not return the full function.
-Only return the docstring.
-Include an example if you can.
-It should start with a short summary written in an imperative mood.
-followed by a newline.
-followed by a short description.
-followed by another newline.
-then followed by any of the following sections sections if they apply to this function (Args: , Returns: , Raises: , Yields: , Note: , Example: )
-"""
-'''
-    # prompt = f"Please write a python docstring conforming to the google code style for docstrings.\n\n{code}\n"
-    # prompt = f'# Python 3.10\n{code}\n\n# An elaborate, high quality docstring for the above function:\n"""'
-
-    print(f"generating a response for \n\n{prompt}")
-    print("-" * 80)
-    print()
-
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        temperature=0,
-        max_tokens=150,
-        top_p=1.0,
-        frequency_penalty=0.0,
-        presence_penalty=0.0,
-        stop=["#", '"""'],
-    )
-    text = response["choices"][0]["text"]
-    text = textwrap.indent(f'"""\n{text}\n"""', "    ")
-    print(text)
-    return text
-
-
-def write_test(code):
-
-    parsed = parse_function(code)
-    prompt = f'Please write a test from the following function using pytest: ```{parsed.name}``` with the following signature {parsed.args}, and the following source code {code}, do not return the full function, only return the docstring surrounded by `"""`, indent the docstring to match the function indentation level'
-
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        temperature=0.7,
-        max_tokens=500,
-    )
-    return response["choices"][0]["text"]
-
-
-def refactor_code(code, prompt):
-
-    prompt = f"refactor the following code to {prompt}\n\n{code}"
-
-    print(f"generating a response for \n\n{prompt}")
-    print("-" * 80)
-    print()
-
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        temperature=0.7,
-        max_tokens=1500,
-    )
-    text = response["choices"][0]["text"]
-    print(text)
-
-    return text
-
-
-def write_blog(code):
+def load_prompt(prompt: str) -> dict:
     """
-
-    Write a blog post about the given code.
-
-    This function takes in a code snippet as an argument and generates a blog post about it using OpenAI's Completion API.
-
-    Args:
-        code (str): The code snippet to generate a blog post about.
-
-    Returns:
-        str: A blog post about the given code snippet.
-
-    Example:
-        response = write_blog("def hello_world():\n    print('Hello World!')")
-        print(response)
-
+    Loads the configuration for the prompt from config.  Finds the
+    corresponding profile and unpacks the prompt config into that profile.
     """
+    profile_name = config["prompts"][prompt].get("profile")
+    prompt_config = config["prompts"][prompt]
+    if profile_name is None or profile_name not in config["profiles"]:
+        return prompt_config
+    profile = copy.deepcopy(config["profiles"][profile_name])
+    for key, value in prompt_config.items():
+        if key != "profile":
+            profile.update({key: value})
+    return profile
 
-    prompt = f"Write a blog post about the following code in Markdown. \n\n```{code}```"
 
-    print(f"generating a response for {prompt[:200]}")
+def run_configured_prompt(prompt_name: str, dry_run: bool, edit: bool) -> Optional[str]:
 
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        temperature=0.7,
-        max_tokens=500,
+    console.log("running prompt")
+    text = ""
+
+    console.log("getting stdin")
+
+    if not sys.stdin.isatty():
+        # if nothing is piped in, sys.stin.read will block forever
+        text = sys.stdin.read()
+
+    console.log(f"read stdin: {text}")
+
+    prompt = load_prompt(prompt_name)
+
+    for key in prompt:
+        console.log(f"templating {key}: {prompt[key]}")
+
+        if isinstance(prompt[key], str):
+            template = Template(prompt[key])
+            value = template.render(input=input, text=text)
+            prompt.update(
+                {
+                    key: tomlkit.string(
+                        f"\n{value}\n" if "\n" in value else value,
+                        multiline=("\n" in value),
+                    )
+                }
+            )
+
+    if edit:
+        editor = os.environ.get("EDITOR", "vim")
+        console.log(f"editing prompt with {editor}")
+        file = tempfile.NamedTemporaryFile(prefix="lockhart", suffix=".toml")
+        file.write(tomlkit.dumps(prompt).encode())
+        file.seek(0)
+        st_mtime = os.stat(file.name).st_mtime  # create time by lockhart
+        initial_time = time.time()
+        proc = subprocess.Popen([editor, file.name])
+        proc.wait()
+        if os.stat(file.name).st_mtime == st_mtime:
+            console.log(os.stat(file.name).st_mtime)
+            console.log("st_mtime", st_mtime)
+            console.log("initial_time", initial_time)
+            console.log("editor quit")
+            return
+        console.log(os.stat(file.name).st_mtime)
+        console.log(os.stat(file.name).st_atime)
+        console.log(os.stat(file.name).st_ctime)
+
+        prompt = tomlkit.loads(Path(file.name).read_text())
+        console.log(f"updated prompt\n{prompt}")
+
+    if prompt is None:
+        raise KeyError(f"{prompt} is not configured")
+
+    if dry_run:
+        console.log("dry run enabled, returning prompt")
+        return prompt
+
+    console.log("prompt: ", prompt)
+    console.log("running completion")
+    # response = openai.Completion.create(**prompt)
+    api = getattr(openai, prompt.pop("api"))
+    response = api.create(**prompt)
+    text = response["choices"][0]["text"]
+    history = load_history()
+    history.append(
+        {
+            "prompt_name": prompt_name,
+            "datetime": datetime.now(),
+            "request": prompt,
+            "response": response,
+        }
     )
-    return response["choices"][0]["text"]
+    save_history(history)
+    return response
 
 
-Function = namedtuple("Function", "name, args")
-
-
-def parse_function(code: str) -> Function:
-    tree = ast.parse(code)
-    args = []
-    name = None
-
-    for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef):
-            name = node.name
-            args = [
-                f"{arg.arg}:"  # {arg.annotation.value}"
-                if arg.annotation
-                else f"{arg.arg}: None"
-                for arg in node.args.args
-            ]
-    if name is None:
-        raise ValueError("input is not a FunctionDef")
-    return Function(name, args)
-
-
-# code_str = """def example_function(arg1:int,arg2:str)->int:
-#     pass"""
-# name, args, return_annotation = extract_function_signature(code_str)
-# print(name)
-# print(args)
-# print(return_annotation)
-
-
-def parse_code():
-    tree = ast.parse(my_code)
-    args = []
-
-    for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef):
-            name = node.name
-            args = [
-                f"{arg.arg}: {arg.annotation.value}"
-                if arg.annotation
-                else f"{arg.arg}: None"
-                for arg in node.args.args
-            ]
-    return name, args
+def list_args(func: callable):
+    """lists the arguments that the function takes"""
+    args = func.__code__.co_varnames
+    return args
+    return list(func.__code__.co_varnames)
