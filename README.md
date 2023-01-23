@@ -40,7 +40,7 @@ lockhart docstring
 # paste in your docstring
 ```
 
-> yes it just uses the clipboard for now.
+> yes it just uses the clipboard for now. - the `develop` branch includes new configuration and commands.
 
 ## Docstring Examples
 
