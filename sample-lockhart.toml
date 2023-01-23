@@ -411,3 +411,55 @@ if __name__ == "__main__":
     history.append("test")
     save_history(history)
 '''
+
+[prompts.refactor-stdin]
+profile='code-edit'
+instruction='refactor the following code so that when nothing is piped into stdin it continues without blocking'
+input='''
+for line in sys.stdin:
+    text = text + line
+'''
+
+[prompts.create-stdin-read]
+profile='code-edit'
+instruction='''
+create a python function that returns any text piped into it from the shell
+'''
+input='''
+'''
+
+[prompts.create-plugin-system]
+profile='code-edit'
+instruction='''
+create a python module to create a plugin system using pluggy where the user can give plugin modules as a string it will load and register them.
+'''
+input='''
+'''
+
+[prompts.create-plugin]
+profile='code-edit'
+instruction='''
+create a python plugin using pluggy, the hookspec and hookimpl is located in lockhartplugin.py.  there is only one hookimpl and it is hello.
+'''
+input='''
+'''
+
+[prompts.edit-toml]
+profile='code-edit'
+instruction='''
+edit the following pyhton3.10 code to write the full prompt to the temprary file as toml, change the tempfile extention to toml, and load all of the tempfile as the new prompt using the toml loader
+'''
+input='''
+editor = os.environ.get("EDITOR", "vim")
+console.log(f"editing prompt with {editor}")
+file = tempfile.NamedTemporaryFile(prefix="lockhart")
+file.write(prompt["prompt"].encode())
+file.seek(0)
+proc = subprocess.Popen([editor, file.name])
+proc.wait()
+if os.stat(file.name).st_mtime != os.stat(file.name).st_atime:
+    console.log("editor quit")
+    return
+
+prompt["prompt"] = file.read().decode()
+'''

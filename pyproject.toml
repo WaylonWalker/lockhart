@@ -24,6 +24,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
+"tomlkit",
   "jinja2",
   "openai",
   "pyperclip",
@@ -95,4 +96,4 @@ exclude_lines = [
 
 [tool.isort]
 profile = "black"
-known_third_party = ["jinja2", "openai", "pytest", "rich", "toml", "typer"]
+known_third_party = ["jinja2", "openai", "pytest", "rich", "toml", "tomlkit", "typer"]

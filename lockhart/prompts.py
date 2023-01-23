@@ -1,13 +1,16 @@
 import copy
 from datetime import datetime
 import os
+from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import time
 from typing import Optional
 
 from jinja2 import Template
 import openai
+import tomlkit
 
 from lockhart.config import config
 from lockhart.console import console
@@ -50,21 +53,38 @@ def run_configured_prompt(prompt_name: str, dry_run: bool, edit: bool) -> Option
 
         if isinstance(prompt[key], str):
             template = Template(prompt[key])
-            prompt[key] = template.render(input=input, text=text)
+            value = template.render(input=input, text=text)
+            prompt.update(
+                {
+                    key: tomlkit.string(
+                        f"\n{value}\n" if "\n" in value else value,
+                        multiline=("\n" in value),
+                    )
+                }
+            )
 
     if edit:
         editor = os.environ.get("EDITOR", "vim")
         console.log(f"editing prompt with {editor}")
-        file = tempfile.NamedTemporaryFile(prefix="lockhart")
-        file.write(prompt["prompt"].encode())
+        file = tempfile.NamedTemporaryFile(prefix="lockhart", suffix=".toml")
+        file.write(tomlkit.dumps(prompt).encode())
         file.seek(0)
+        st_mtime = os.stat(file.name).st_mtime  # create time by lockhart
+        initial_time = time.time()
         proc = subprocess.Popen([editor, file.name])
         proc.wait()
-        if os.stat(file.name).st_mtime != os.stat(file.name).st_atime:
+        if os.stat(file.name).st_mtime == st_mtime:
+            console.log(os.stat(file.name).st_mtime)
+            console.log("st_mtime", st_mtime)
+            console.log("initial_time", initial_time)
             console.log("editor quit")
             return
+        console.log(os.stat(file.name).st_mtime)
+        console.log(os.stat(file.name).st_atime)
+        console.log(os.stat(file.name).st_ctime)
 
-        prompt["prompt"] = file.read().decode()
+        prompt = tomlkit.loads(Path(file.name).read_text())
+        console.log(f"updated prompt\n{prompt}")
 
     if prompt is None:
         raise KeyError(f"{prompt} is not configured")
