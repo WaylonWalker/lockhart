@@ -5,6 +5,7 @@
 
 import typer
 
+from lockhart.cli.common import verbose_callback
 from lockhart.cli.config import config_app
 from lockhart.cli.history import history_app
 from lockhart.cli.prompt import prompt_app
@@ -37,10 +38,17 @@ def version_callback(value: bool) -> None:
 @app.callback()
 def main(
     version: bool = typer.Option(
-        None, "--version", callback=version_callback, is_eager=True
+        None,
+        "--version",
+        callback=version_callback,
+        is_eager=True,
+    ),
+    verbose: bool = typer.Option(
+        False,
+        callback=verbose_callback,
+        help="show the log messages",
     ),
 ) -> None:
-    # Do other global stuff, handle other global options here
     return
 
 
