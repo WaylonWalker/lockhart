@@ -46,7 +46,10 @@ def run_configured_prompt(prompt_name: str, dry_run: bool, edit: bool) -> Option
 
     console.log(f"read stdin: {text}")
 
-    prompt = load_prompt(prompt_name)
+    if isinstance(prompt_name, str):
+        prompt = load_prompt(prompt_name)
+    else:
+        prompt = prompt_name
 
     for key in prompt:
         console.log(f"templating {key}: {prompt[key]}")
