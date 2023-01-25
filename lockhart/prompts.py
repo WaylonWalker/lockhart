@@ -64,27 +64,7 @@ def run_configured_prompt(prompt_name: str, dry_run: bool, edit: bool) -> Option
             )
 
     if edit:
-        editor = os.environ.get("EDITOR", "vim")
-        console.log(f"editing prompt with {editor}")
-        file = tempfile.NamedTemporaryFile(prefix="lockhart", suffix=".toml")
-        file.write(tomlkit.dumps(prompt).encode())
-        file.seek(0)
-        st_mtime = os.stat(file.name).st_mtime  # create time by lockhart
-        initial_time = time.time()
-        proc = subprocess.Popen([editor, file.name])
-        proc.wait()
-        if os.stat(file.name).st_mtime == st_mtime:
-            console.log(os.stat(file.name).st_mtime)
-            console.log("st_mtime", st_mtime)
-            console.log("initial_time", initial_time)
-            console.log("editor quit")
-            return
-        console.log(os.stat(file.name).st_mtime)
-        console.log(os.stat(file.name).st_atime)
-        console.log(os.stat(file.name).st_ctime)
-
-        prompt = tomlkit.loads(Path(file.name).read_text())
-        console.log(f"updated prompt\n{prompt}")
+        prompt = edit_prompt(prompt)
 
     if prompt is None:
         raise KeyError(f"{prompt} is not configured")
@@ -110,6 +90,31 @@ def run_configured_prompt(prompt_name: str, dry_run: bool, edit: bool) -> Option
     )
     save_history(history)
     return response
+
+
+def edit_prompt(prompt: dict) -> dict:
+    editor = os.environ.get("EDITOR", "vim")
+    console.log(f"editing prompt with {editor}")
+    file = tempfile.NamedTemporaryFile(prefix="lockhart", suffix=".toml")
+    file.write(tomlkit.dumps(prompt).encode())
+    file.seek(0)
+    st_mtime = os.stat(file.name).st_mtime  # create time by lockhart
+    initial_time = time.time()
+    proc = subprocess.Popen([editor, file.name])
+    proc.wait()
+    if os.stat(file.name).st_mtime == st_mtime:
+        console.log(os.stat(file.name).st_mtime)
+        console.log("st_mtime", st_mtime)
+        console.log("initial_time", initial_time)
+        console.log("editor quit")
+        return
+    console.log(os.stat(file.name).st_mtime)
+    console.log(os.stat(file.name).st_atime)
+    console.log(os.stat(file.name).st_ctime)
+
+    prompt = tomlkit.loads(Path(file.name).read_text())
+    console.log(f"updated prompt\n{prompt}")
+    return prompt
 
 
 def list_args(func: callable):
