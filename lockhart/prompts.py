@@ -53,20 +53,7 @@ def run_prompt(
     else:
         prompt = prompt_name
 
-    for key in prompt:
-        console.log(f"templating {key}: {prompt[key]}")
-
-        if isinstance(prompt[key], str):
-            template = Template(prompt[key])
-            value = template.render(input=input, text=text)
-            prompt.update(
-                {
-                    key: tomlkit.string(
-                        f"\n{value}\n" if "\n" in value else value,
-                        multiline=("\n" in value),
-                    )
-                }
-            )
+    prompt = template_prompt(prompt, text)
 
     if edit:
         prompt = edit_prompt(prompt)
@@ -95,6 +82,24 @@ def run_prompt(
     )
     save_history(history)
     return response
+
+
+def template_prompt(prompt: dict, text: str) -> dict:
+    for key in prompt:
+        console.log(f"templating {key}: {prompt[key]}")
+
+        if isinstance(prompt[key], str):
+            template = Template(prompt[key])
+            value = template.render(input=input, text=text)
+            prompt.update(
+                {
+                    key: tomlkit.string(
+                        f"\n{value}\n" if "\n" in value else value,
+                        multiline=("\n" in value),
+                    )
+                }
+            )
+    return prompt
 
 
 def edit_prompt(prompt: dict) -> dict:
