@@ -33,7 +33,7 @@ def load_prompt(prompt: str) -> dict:
     return profile
 
 
-def run_configured_prompt(
+def run_prompt(
     prompt_name: Union[str, dict], dry_run: bool, edit: bool
 ) -> Optional[str]:
 
