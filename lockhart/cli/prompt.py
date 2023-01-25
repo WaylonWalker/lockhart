@@ -46,7 +46,7 @@ def run(
     ),
 ):
     console.log(f"running configured prompt: {prompt}")
-    result = prompts.run_configured_prompt(prompt, dry_run, edit)
+    result = prompts.run_prompt(prompt, dry_run, edit)
     if result:
         try:
             Console().print(result["choices"][0]["text"])

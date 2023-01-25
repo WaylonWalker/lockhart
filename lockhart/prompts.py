@@ -34,7 +34,7 @@ def load_prompt(prompt: str) -> dict:
 
 
 def run_prompt(
-    prompt_name: Union[str, dict], dry_run: bool, edit: bool
+    prompt_name: Union[str, dict], dry_run: bool = False, edit: bool = False
 ) -> Optional[str]:
 
     console.log("running prompt")
@@ -59,7 +59,7 @@ def run_prompt(
         prompt = edit_prompt(prompt)
 
     if prompt is None:
-        raise KeyError(f"{prompt} is not configured")
+        return "prompt quit"
 
     if dry_run:
         console.log("dry run enabled, returning prompt")
