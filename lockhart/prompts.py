@@ -6,7 +6,7 @@ import subprocess
 import sys
 import tempfile
 import time
-from typing import Optional
+from typing import Optional, Union
 
 from jinja2 import Template
 import openai
@@ -33,7 +33,9 @@ def load_prompt(prompt: str) -> dict:
     return profile
 
 
-def run_configured_prompt(prompt_name: str, dry_run: bool, edit: bool) -> Optional[str]:
+def run_configured_prompt(
+    prompt_name: Union[str, dict], dry_run: bool, edit: bool
+) -> Optional[str]:
 
     console.log("running prompt")
     text = ""
