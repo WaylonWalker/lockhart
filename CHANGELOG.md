@@ -1,4 +1,9 @@
-##
+## 0.6.0
+
+fix: default to quiet console, make --verbose a common cli argument, #25 0.6.0.dev1
+fix: full test coverage in config #27 0.6.0.dev2
+fix: if default config is missing load in the sample config #27 0.6.0.dev2
+fix: config location was set to the sample by mistake #27 0.6.0.dev2
 
 ## 0.5.0
 
