@@ -3,6 +3,8 @@ from pathlib import Path
 
 import tomlkit
 
+from lockhart.console import console
+
 
 def get_config(
     config_file=Path.home() / ".config" / "lockhart" / "lockhart.toml",
@@ -12,7 +14,7 @@ def get_config(
     try:
         config = tomlkit.loads(config_file.read_text())
     except FileNotFoundError:
-        print(f"No config file found at {config_file}. Using default config.")
+        console.log(f"No config file found at {config_file}. Using default config.")
         config_file = default_config_file
         config = tomlkit.loads(config_file.read_text())
 
