@@ -20,20 +20,14 @@ class Request(Static):
     myid = reactive(0)
 
     def __init__(self, id, data, classes=None):
-        # super.__init__(*args, **kwargs)
         super().__init__(classes=classes)
         self.data = data
         self.myid = id
-
-    # def on_mount(self):
-    #     self.update_data()
 
     def update_data(self):
         self.log("updating")
         self.query_one("#id", Static).update(str(self.myid))
         self.query_one("#date", Static).update(str(self.data["datetime"]))
-        if "request" not in self.data:
-            return
         for key in REQUEST_KEYS:
             value = str(self.data.get("request", {}).get(key, ""))
             if value == "":
@@ -93,9 +87,6 @@ class RequestApp(App):
         ("G", "new_commit", "Commit"),
         ("r", "r", "r"),
     ]
-
-    def r(self):
-        self.query_one(Request).update_data()
 
     @property
     def history(self):
