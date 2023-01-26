@@ -33,6 +33,15 @@ Write a good git commit message given the following verbose output from git, do 
 {{text}}
 '''
 
+[prompts.changelog]
+profile='code'
+max_tokens=80
+prompt = '''
+Write a good one line changelog.md entry for the following changes
+
+{{text}}
+'''
+
 [prompts.blog]
 profile='code'
 temperature=0.7
