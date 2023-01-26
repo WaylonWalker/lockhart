@@ -59,6 +59,7 @@ dependencies = [
   "pytest",
   "pytest-cov",
   "pytest-mock",
+  "pytest-pretty",
   "seed-isort-config",
 ]
 [tool.hatch.envs.default.scripts]
@@ -96,4 +97,4 @@ exclude_lines = [
 
 [tool.isort]
 profile = "black"
-known_third_party = ["jinja2", "openai", "pytest", "rich", "tomlkit", "typer"]
+known_third_party = ["jinja2", "openai", "pyperclip", "pytest", "rich", "textual", "tomlkit", "typer"]
