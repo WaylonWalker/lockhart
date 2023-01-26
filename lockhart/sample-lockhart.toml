@@ -1,3 +1,6 @@
+[lockhart]
+name='Lockhart'
+
 [profiles.code]
 api='Completion'
 engine="text-davinci-003"
@@ -12,6 +15,53 @@ api='Edit'
 engine="code-davinci-edit-001"
 temperature=0
 top_p=1.0
+
+[prompts.default-edit]
+profile='code-edit'
+instruction = '''
+'''
+text = '''
+
+'''
+
+[prompts.commit]
+profile='code'
+max_tokens=80
+prompt = '''
+Write a good git commit message given the following verbose output from git, do not use the word commit
+
+{{text}}
+'''
+
+[prompts.blog]
+profile='code'
+temperature=0.7
+max_tokens=1200
+prompt = '''
+Write an engaging blog post about the following code in markdown, avoid using words such as simple and easy.
+
+gh release create v$NEW_VERSION -F CHANGELOG.md dist/*.whl dist/*.tar.gz
+'''
+
+[prompts.blog-description]
+profile='code'
+temperature=0.7
+max_tokens=30
+prompt = '''
+Write a 150-160 character description about this blog post that will capture in google's seo
+
+{{text}}
+'''
+
+[prompts.blog-tweet]
+profile='code'
+max_tokens=30
+temperature=0.7
+prompt = '''
+Write an eye catching tweet about the following blog post
+
+{{text}}
+'''
 
 [prompts.docstring]
 profile='code'
@@ -101,11 +151,8 @@ prompt = '''
 '''
 
 [prompts.code-create]
-profile='code-edit'
-input='''
-'''
-instruction='''
-create a python3.10 function to
+profile='code'
+prompt='''
 '''
 
 [prompts.code-edit]
