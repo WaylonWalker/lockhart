@@ -38,8 +38,3 @@ async def test_press_prev_rollover():
         for _ in range(len(request_app.app.history)):
             await request_app.press("k")
         assert request_app.app.i == 0
-
-
-# async def test_mount_request():
-#     async with RequestApp().run_test() as request_app:
-#         request_app.mount(Request())
