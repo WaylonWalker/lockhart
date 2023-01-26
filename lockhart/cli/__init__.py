@@ -9,6 +9,7 @@ from lockhart.cli.common import verbose_callback
 from lockhart.cli.config import config_app
 from lockhart.cli.history import history_app
 from lockhart.cli.prompt import prompt_app
+from lockhart.cli.tui import tui_app
 
 app = typer.Typer(
     name="lockhart",
@@ -55,3 +56,4 @@ def main(
 app.add_typer(config_app)
 app.add_typer(prompt_app)
 app.add_typer(history_app)
+app.add_typer(tui_app)

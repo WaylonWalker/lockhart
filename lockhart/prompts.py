@@ -1,16 +1,16 @@
 import copy
-from datetime import datetime
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import time
+from datetime import datetime
+from pathlib import Path
 from typing import Optional, Union
 
-from jinja2 import Template
 import openai
 import tomlkit
+from jinja2 import Template
 
 from lockhart.config import config
 from lockhart.console import console
