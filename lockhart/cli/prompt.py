@@ -1,5 +1,5 @@
-from rich.console import Console
 import typer
+from rich.console import Console
 
 from lockhart import prompts
 from lockhart.cli.common import verbose_callback

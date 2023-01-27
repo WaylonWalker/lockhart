@@ -6,6 +6,8 @@
 - fix: config location was set to the sample by mistake #27 0.6.0.dev2
 - Added console.log to print a message when no config file is
   found #29 0.6.0.dev4
+- Add `get_jinja_env()` and support for templating and editing prompts in
+  `prompts.py` #30 0.6.0dev5
 
 ## 0.5.0
 
