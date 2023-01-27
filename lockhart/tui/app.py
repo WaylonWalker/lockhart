@@ -6,6 +6,7 @@ from textual.containers import Container
 from textual.reactive import reactive
 from textual.widgets import Footer, Static
 
+from lockhart.config import config
 from lockhart.history import load_history
 from lockhart.prompts import run_prompt
 
@@ -73,20 +74,7 @@ class RequestApp(App):
     """A Textual app to manage requests."""
 
     CSS_PATH = Path("__file__").parent / "app.css"
-    BINDINGS = [
-        ("q", "quit", "Quit"),
-        ("d", "toggle_dark", "Toggle dark mode"),
-        ("j", "next", "Next"),
-        ("j", "next", "Next"),
-        ("k", "prev", "Prev"),
-        ("e", "edit", "Edit"),
-        ("o", "run_prompt", "run_prompt"),
-        ("c", "copy_to_clipboard", "CopyResults"),
-        ("C", "new_code_create", "CreateCode"),
-        ("E", "new_code_edit", "EditCode"),
-        ("G", "new_commit", "Commit"),
-        ("r", "r", "r"),
-    ]
+    BINDINGS = [tuple(b.values()) for b in config["lockhart"]["tui"]["bindings"]]
 
     @property
     def history(self):
