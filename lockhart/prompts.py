@@ -15,6 +15,7 @@ from jinja2 import Template
 from lockhart.config import config
 from lockhart.console import console
 from lockhart.history import load_history, save_history
+from lockhart.jinja_env import get_jinja_env
 
 
 def load_prompt(prompt: str) -> dict:
@@ -56,7 +57,7 @@ def run_prompt(
     prompt = template_prompt(prompt, text)
 
     if edit:
-        prompt = edit_prompt(prompt)
+        return edit_prompt(prompt)
 
     if prompt is None:
         return "prompt quit"
@@ -68,7 +69,13 @@ def run_prompt(
     console.log("prompt: ", prompt)
     console.log("running completion")
     # response = openai.Completion.create(**prompt)
-    api = getattr(openai, prompt.pop("api"))
+    if prompt.get("api", None):
+        api = getattr(openai, prompt.pop("api"))
+    elif hasattr(prompt, "prompt"):
+        api = getattr(openai, "Completion")
+    else:
+        api = getattr(openai, "Edit")
+
     response = api.create(**prompt)
     text = response["choices"][0]["text"]
     history = load_history()
@@ -89,7 +96,7 @@ def template_prompt(prompt: dict, text: str) -> dict:
         console.log(f"templating {key}: {prompt[key]}")
 
         if isinstance(prompt[key], str):
-            template = Template(prompt[key])
+            template = get_jinja_env().from_string(prompt[key])
             value = template.render(input=input, text=text)
             prompt.update(
                 {
@@ -106,7 +113,7 @@ def edit_prompt(prompt: dict) -> dict:
     editor = os.environ.get("EDITOR", "vim")
     console.log(f"editing prompt with {editor}")
     file = tempfile.NamedTemporaryFile(prefix="lockhart", suffix=".toml")
-    file.write(tomlkit.dumps(prompt).encode())
+    file.write(("# edit = true\n" + tomlkit.dumps(prompt)).encode())
     file.seek(0)
     st_mtime = os.stat(file.name).st_mtime  # create time by lockhart
     initial_time = time.time()
@@ -124,7 +131,9 @@ def edit_prompt(prompt: dict) -> dict:
 
     prompt = tomlkit.loads(Path(file.name).read_text())
     console.log(f"updated prompt\n{prompt}")
-    return prompt
+    dry_run = bool(prompt.pop("dry_run", False))
+    edit = bool(prompt.pop("edit", False))
+    return run_prompt(prompt, dry_run=dry_run, edit=edit)
 
 
 def list_args(func: callable):
