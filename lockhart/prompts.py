@@ -111,7 +111,7 @@ def template_prompt(prompt: dict, text: str) -> dict:
 def edit_prompt(prompt: dict) -> dict:
     editor = os.environ.get("EDITOR", "vim")
     console.log(f"editing prompt with {editor}")
-    file = tempfile.NamedTemporaryFile(prefix="lockhart", suffix=".toml")
+    file = tempfile.NamedTemporaryFile(prefix="lockhart", suffix=".toml", delete=False)
     file.write(("# edit = true\n" + tomlkit.dumps(prompt)).encode())
     file.seek(0)
     st_mtime = os.stat(file.name).st_mtime  # create time by lockhart
