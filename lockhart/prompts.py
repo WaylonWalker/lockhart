@@ -10,7 +10,6 @@ from typing import Optional, Union
 
 import openai
 import tomlkit
-from jinja2 import Template
 
 from lockhart.config import config
 from lockhart.console import console
