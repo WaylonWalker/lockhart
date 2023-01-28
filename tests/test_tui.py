@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from lockhart.tui.app import RequestApp
 
 
@@ -40,9 +42,22 @@ async def test_press_next_rollover(load_history):
         assert load_history.called_with()
 
 
-async def test_press_prev_rollover(load_history):
+async def test_copy_to_clipboard(load_history):
     async with RequestApp().run_test() as request_app:
-        for _ in range(len(request_app.app.history)):
-            await request_app.press("k")
-        assert request_app.app.i == 0
+        with patch(
+            "lockhart.tui.app.Request.copy_to_clipboard"
+        ) as mock_copy_to_clipboard:
+            await request_app.press("c")
+            assert load_history.call_count == 1
+            assert load_history.called_with()
+            assert mock_copy_to_clipboard.call_count == 1
+            assert mock_copy_to_clipboard.called_with()
+
+
+async def test_toggle_dark(load_history):
+    async with RequestApp().run_test() as request_app:
+        assert request_app.app.dark
+        await request_app.press("d")
+        assert not request_app.app.dark
         assert load_history.call_count == 1
+        assert load_history.called_with()
