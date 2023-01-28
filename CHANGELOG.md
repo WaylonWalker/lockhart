@@ -8,6 +8,7 @@
   found #29 0.6.0.dev4
 - Add `get_jinja_env()` and support for templating and editing prompts in
   `prompts.py` #30 0.6.0dev5
+- Added toggle_sidebar action. #32 0.6.0.dev7
 
 ## 0.5.0
 
