@@ -15,8 +15,6 @@ from lockhart.prompts import run_prompt
 REQUEST_KEYS = ["engine", "temperature", "instruction", "input", "prompt"]
 RESPONSE_KEYS = ["created", "choices", "usage"]
 
-console.quiet = False
-
 
 class PromptSidebar(Static):
     def compose(self) -> ComposeResult:
