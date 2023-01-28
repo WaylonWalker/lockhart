@@ -24,14 +24,15 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-"tomlkit",
   "jinja2",
   "openai",
-  "pyperclip",
-  "toml",
-  "typer",
   "pluggy",
+  "pyperclip",
   "rich",
+  "textual",
+  "toml",
+  "tomlkit",
+  "typer",
 ]
 dynamic = ["version"]
 
@@ -59,6 +60,7 @@ dependencies = [
   "pytest",
   "pytest-cov",
   "pytest-mock",
+  "pytest-pretty",
   "seed-isort-config",
 ]
 [tool.hatch.envs.default.scripts]
@@ -96,4 +98,8 @@ exclude_lines = [
 
 [tool.isort]
 profile = "black"
-known_third_party = ["jinja2", "openai", "pytest", "rich", "tomlkit", "typer"]
+known_third_party = ["jinja2", "openai", "pyperclip", "pytest", "rich", "textual", "tomlkit", "typer"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
