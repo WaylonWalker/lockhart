@@ -3,6 +3,7 @@ from pathlib import Path
 import pyperclip
 from textual.app import App, ComposeResult
 from textual.containers import Container
+from textual.css.query import NoMatches
 from textual.reactive import reactive
 from textual.widgets import Button, Footer, Static
 
@@ -193,9 +194,8 @@ class RequestApp(App):
     def action_toggle_sidebar(self):
         try:
             self.query_one("PromptSidebar").remove()
-        except:
+        except NoMatches:
             self.mount(PromptSidebar())
-        # self.refresh(repaint=True, layout=True)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         prompt = event.button.id[:-7]
