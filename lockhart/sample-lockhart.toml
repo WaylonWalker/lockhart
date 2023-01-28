@@ -51,6 +51,11 @@ key = "G"
 action = "new_commit"
 description = "Commit"
 
+[[lockhart.tui.bindings]]
+key = "b"
+action = "toggle_sidebar"
+description = "Toggle Sidebar"
+
 [profiles.code]
 api='Completion'
 engine="text-davinci-003"

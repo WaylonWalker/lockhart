@@ -3,10 +3,13 @@ Request {
   background: $boost;
   padding: 1;
   margin: 1;
+  min-height: 100%;
+  height: auto;
 }
 
 #id-container {
   layout: horizontal;
+  height: 1;
 }
 
 #id {
@@ -37,19 +40,31 @@ Request {
 }
 #response-text-container {
   height: auto;
+  max-height: 40vh;
   background: $background-lighten-2;
 }
 #requests {
   /* background: red; */
   border-left: outer $secondary;
   /* padding-left: 1; */
+  margin-top: 0;
   height: auto;
+  max-height: 40vh;
 }
+
 .hidden {
   visibility: hidden;
   height: 0;
   border: none;
   margin: 0;
   padding: 0;
-  width: 0;
+  width: 1;
+}
+
+PromptSidebar {
+  height: 100vh;
+  width: 20;
+  background: $secondary-background-darken-2;
+  dock: left;
+  margin-right: 1;
 }

@@ -3,8 +3,9 @@ from pathlib import Path
 import pyperclip
 from textual.app import App, ComposeResult
 from textual.containers import Container
+from textual.css.query import NoMatches
 from textual.reactive import reactive
-from textual.widgets import Footer, Static
+from textual.widgets import Button, Footer, Static
 
 from lockhart.config import config
 from lockhart.history import load_history
@@ -12,6 +13,17 @@ from lockhart.prompts import run_prompt
 
 REQUEST_KEYS = ["engine", "temperature", "instruction", "input", "prompt"]
 RESPONSE_KEYS = ["created", "choices", "usage"]
+
+
+class PromptSidebar(Static):
+    def compose(self) -> ComposeResult:
+        yield Container(
+            *[
+                Button(prompt, id=f"{prompt}-button")
+                for prompt in config["prompts"].keys()
+            ],
+            id="prompt-sidebar",
+        )
 
 
 class Request(Static):
@@ -64,9 +76,9 @@ class Request(Static):
             Static(id="response-text", classes="response-text"),
             id="response-text-container",
         )
+        yield PromptSidebar()
 
     def copy_to_clipboard(self):
-
         pyperclip.copy(self.data["response"]["choices"][0]["text"])
 
 
@@ -124,7 +136,6 @@ class RequestApp(App):
     def action_toggle_dark(self) -> None:
         """An action to toggle dark mode."""
         self.dark = not self.dark
-        self.log("going dark")
 
     def action_edit(self):
         prompt = self.history[self.i]["request"]
@@ -176,6 +187,20 @@ class RequestApp(App):
     def action_new_code_create(self):
         self._driver.stop_application_mode()
         run_prompt("code-create", edit=True)
+        self._driver.start_application_mode()
+        self.update_history()
+        self.activate(i=0)
+
+    def action_toggle_sidebar(self):
+        try:
+            self.query_one("PromptSidebar").remove()
+        except NoMatches:
+            self.mount(PromptSidebar())
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        prompt = event.button.id[:-7]
+        self._driver.stop_application_mode()
+        run_prompt(prompt, edit=True)
         self._driver.start_application_mode()
         self.update_history()
         self.activate(i=0)
