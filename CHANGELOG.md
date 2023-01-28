@@ -1,3 +1,8 @@
+## 0.6.1
+
+- fix: toml items not string throw attribute error closes #34, 0.6.1
+- fix: tui does not work with empty history 0.6.1
+
 ## 0.6.0
 
 - fix: default to quiet console, make --verbose a common cli argument, #25 0.6.0.dev1
