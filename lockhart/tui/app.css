@@ -3,6 +3,7 @@ Request {
   background: $boost;
   padding: 1;
   margin: 1;
+  height: 100%;
 }
 
 #id-container {
@@ -45,11 +46,20 @@ Request {
   /* padding-left: 1; */
   height: auto;
 }
+
 .hidden {
   visibility: hidden;
   height: 0;
   border: none;
   margin: 0;
   padding: 0;
-  width: 0;
+  width: 1;
+}
+
+PromptSidebar {
+  height: 100vh;
+  width: 20;
+  background: $secondary-background-darken-2;
+  dock: left;
+  margin-right: 1;
 }
