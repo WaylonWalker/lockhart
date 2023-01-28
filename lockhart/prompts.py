@@ -70,7 +70,7 @@ def run_prompt(
     # response = openai.Completion.create(**prompt)
     if prompt.get("api", None):
         api = getattr(openai, prompt.pop("api"))
-    elif hasattr(prompt, "prompt"):
+    elif "prompt" in prompt.keys():
         api = getattr(openai, "Completion")
     else:
         api = getattr(openai, "Edit")
