@@ -1,11 +1,11 @@
 import copy
+from datetime import datetime
 import os
+from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import time
-from datetime import datetime
-from pathlib import Path
 from typing import Optional, Union
 
 import openai
@@ -92,7 +92,7 @@ def run_prompt(
 
 def template_prompt(prompt: dict, text: str) -> dict:
     for key in prompt:
-        console.log(f"templating {key}: {prompt[key]}")
+        console.log(f"templating {key}: {prompt[key].__repr__()}")
 
         if isinstance(prompt[key], str):
             template = get_jinja_env().from_string(prompt[key])
