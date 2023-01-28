@@ -1,6 +1,56 @@
 [lockhart]
 name='Lockhart'
 
+[[lockhart.tui.bindings]]
+key = "q"
+action = "quit"
+description = "Quit"
+
+[[lockhart.tui.bindings]]
+key = "d"
+action = "toggle_dark"
+description = "Toggle dark mode"
+
+[[lockhart.tui.bindings]]
+key = "j"
+action = "next"
+description = "Next"
+
+[[lockhart.tui.bindings]]
+key = "k"
+action = "prev"
+description = "Prev"
+
+[[lockhart.tui.bindings]]
+key = "e"
+action = "edit"
+description = "Edit"
+
+[[lockhart.tui.bindings]]
+key = "o"
+action = "run_prompt"
+description = "run_prompt"
+
+[[lockhart.tui.bindings]]
+key = "c"
+action = "copy_to_clipboard"
+description = "CopyResults"
+
+[[lockhart.tui.bindings]]
+key = "C"
+action = "new_code_create"
+description = "CreateCode"
+
+[[lockhart.tui.bindings]]
+key = "E"
+action = "new_code_edit"
+description = "EditCode"
+
+[[lockhart.tui.bindings]]
+key = "G"
+action = "new_commit"
+description = "Commit"
+
 [profiles.code]
 api='Completion'
 engine="text-davinci-003"
@@ -29,6 +79,15 @@ profile='code'
 max_tokens=80
 prompt = '''
 Write a good git commit message given the following verbose output from git, do not use the word commit
+
+{{text}}
+'''
+
+[prompts.changelog]
+profile='code'
+max_tokens=80
+prompt = '''
+Write a good one line changelog.md entry for the following changes
 
 {{text}}
 '''
