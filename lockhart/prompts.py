@@ -110,6 +110,16 @@ def template_prompt(prompt: dict, text: str) -> dict:
 
 def edit_prompt(prompt: dict) -> dict:
     editor = os.environ.get("EDITOR", "vim")
+    if not shutil.which(editor):
+        if os.name == "nt":
+            raise FileNotFoundError(
+                f"your configured %EDITOR% `{editor}` was not found on your %PATH%"
+            )
+        else:
+            raise FileNotFoundError(
+                f"your configured $EDITOR `{editor}` was not found on your $PATH"
+            )
+
     console.log(f"editing prompt with {editor}")
     file = tempfile.NamedTemporaryFile(prefix="lockhart", suffix=".toml", delete=False)
     file.write(("# edit = true\n" + tomlkit.dumps(prompt)).encode())
