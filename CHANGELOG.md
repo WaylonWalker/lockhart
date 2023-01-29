@@ -1,7 +1,11 @@
+## 0.6.2
+
+- fix: unable to edit tempfile on findows, 0.6.2
+
 ## 0.6.1
 
-- fix: toml items not string throw attribute error closes #34, 0.6.1
-- fix: tui does not work with empty history 0.6.1
+- fix: toml items not string throw attribute error closes #34, 0.6.1.dev0
+- fix: tui does not work with empty history 0.6.1.dev0
 
 ## 0.6.0
 
