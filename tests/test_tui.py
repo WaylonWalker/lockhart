@@ -47,7 +47,7 @@ async def test_copy_to_clipboard(load_history):
         with patch(
             "lockhart.tui.app.Request.copy_to_clipboard"
         ) as mock_copy_to_clipboard:
-            await request_app.press("c")
+            await request_app.press("y")
             assert load_history.call_count == 1
             assert load_history.called_with()
             assert mock_copy_to_clipboard.call_count == 1
