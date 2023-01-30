@@ -121,24 +121,22 @@ def edit_prompt(prompt: dict) -> dict:
             )
 
     console.log(f"editing prompt with {editor}")
-    file = tempfile.NamedTemporaryFile(prefix="lockhart", suffix=".toml", delete=False)
-    file.write(("# edit = true\n" + tomlkit.dumps(prompt)).encode())
-    file.seek(0)
-    st_mtime = os.stat(file.name).st_mtime  # create time by lockhart
-    initial_time = time.time()
-    proc = subprocess.Popen([editor, file.name])
-    proc.wait()
-    if os.stat(file.name).st_mtime == st_mtime:
-        console.log(os.stat(file.name).st_mtime)
-        console.log("st_mtime", st_mtime)
-        console.log("initial_time", initial_time)
-        console.log("editor quit")
-        return
-    console.log(os.stat(file.name).st_mtime)
-    console.log(os.stat(file.name).st_atime)
-    console.log(os.stat(file.name).st_ctime)
+    with tempfile.NamedTemporaryFile(prefix="lockhart", suffix=".toml") as file:
+        file.seek(0)
+        file.write(("# edit = true\n" + tomlkit.dumps(prompt)).encode())
+        file.flush()
+        st_mtime = os.stat(file.name).st_mtime  # create time by lockhart
+        try:
+            proc = subprocess.Popen([editor, file.name])
+        except FileNotFoundError:
+            console.log(f"{editor} is not installed")
+            return
+        proc.wait()
+        if os.stat(file.name).st_mtime == st_mtime:
+            # the file was not modified, return without running
+            return
 
-    prompt = tomlkit.loads(Path(file.name).read_text())
+        prompt = tomlkit.loads(Path(file.name).read_text())
     console.log(f"updated prompt\n{prompt}")
     dry_run = bool(prompt.pop("dry_run", False))
     edit = bool(prompt.pop("edit", False))
