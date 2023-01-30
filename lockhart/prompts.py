@@ -2,10 +2,10 @@ import copy
 from datetime import datetime
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
-import time
 from typing import Optional, Union
 
 import openai
