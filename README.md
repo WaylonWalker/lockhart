@@ -34,13 +34,14 @@ Lockhart it currently very crude, it works out of the clipboard. Copy a
 function to your clipboard, run `lockhart docstring` then paste the docstring
 in.
 
+## tui
+
 ```bash
-# copy a function
-lockhart docstring
-# paste in your docstring
+lockhart tui
 ```
 
-> yes it just uses the clipboard for now. - the `develop` branch includes new configuration and commands.
+https://user-images.githubusercontent.com/22648375/217840817-04626da4-8558-4fc4-8b05-ff0e57a2a28b.mp4
+
 
 ## Docstring Examples
 
