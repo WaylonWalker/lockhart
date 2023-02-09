@@ -1,6 +1,7 @@
 ## 0.6.2
 
-- fix: unable to edit tempfile on findows, 0.6.2
+- fix: unable to edit tempfile on findows, 0.6.2.dev1
+- fix: `lockhart config show` does not print without --verbose, 0.6.2.dev2
 
 ## 0.6.1
 
