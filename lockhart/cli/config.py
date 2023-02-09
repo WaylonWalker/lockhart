@@ -2,7 +2,7 @@ import typer
 
 from lockhart.cli.common import verbose_callback
 from lockhart.config import config as configuration
-from lockhart.console import console
+from rich.console import Console
 
 config_app = typer.Typer()
 
@@ -26,4 +26,4 @@ def show(
         help="show the log messages",
     ),
 ):
-    console.print(configuration)
+    Console().print(configuration)
