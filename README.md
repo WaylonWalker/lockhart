@@ -42,6 +42,18 @@ lockhart tui
 
 https://user-images.githubusercontent.com/22648375/217840817-04626da4-8558-4fc4-8b05-ff0e57a2a28b.mp4
 
+### keys
+
+* C - Create new code
+* e - edit return value from history item
+* E - open an empty edit template
+* o - open the current prompt from history
+* j - next item from history
+* k - prev item from history
+* q - quit
+* d - toggle dark mode
+* b - toggle sidebar of preset prompts
+* G - open an empty prompt for writing a git commit
 
 ## Docstring Examples
 
