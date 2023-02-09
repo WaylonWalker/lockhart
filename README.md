@@ -55,6 +55,23 @@ https://user-images.githubusercontent.com/22648375/217840817-04626da4-8558-4fc4-
 * b - toggle sidebar of preset prompts
 * G - open an empty prompt for writing a git commit
 
+### Editing prompts
+
+Currently the tui runs the users configured `$EDITOR` in a subprocess, waits for the editor to close, and if the file was changed then it runs the prompt.  If the file was not changed then it does not run the prompt.
+
+```bash
+## mac/linux
+export EDITOR=vim
+ 
+## windows
+set EDITOR=notepad
+```
+
+### closing vim
+
+**:x** without a change to the content will not trigger a file change and the prompt will not run.  If you want to use the prompt as-is without edit close vim with **:wq**.
+
+
 ## Docstring Examples
 
 ```python
