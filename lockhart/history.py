@@ -15,7 +15,7 @@ def save_history(history, history_file=None):
     console.log(f"saving\n{history} to {history_file}")
     with history_file.open("wb") as f:
         pickle.dump(history, f)
-    console.log(f"wrote history")
+    console.log("wrote history")
 
 
 def load_history(history_file=None):
@@ -30,7 +30,7 @@ def load_history(history_file=None):
             console.log(f"loaded {len(history)} items into history")
             return history
     else:
-        console.log(f"history_file does not exist, returning empty history")
+        console.log("history_file does not exist, returning empty history")
         return []
 
 

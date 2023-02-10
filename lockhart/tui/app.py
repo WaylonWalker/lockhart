@@ -60,7 +60,7 @@ class Request(Static):
                 self.query_one(f"#request-{key}", Static).update(value)
                 self.query_one(f"#request-{key}-container").remove_class("hidden")
                 self.query_one(f"#request-{key}").remove_class("hidden")
-        self.query_one(f"#response-text", Static).update(
+        self.query_one("#response-text", Static).update(
             self.data["response"]["choices"][0]["text"]
         )
 

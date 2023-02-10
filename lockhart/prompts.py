@@ -1,17 +1,16 @@
 import copy
+from datetime import datetime
 import os
+from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tempfile
-from datetime import datetime
-from pathlib import Path
 from typing import Optional, Union
 
 import openai
 import tomlkit
 
-import datetime
 from lockhart.config import config
 from lockhart.console import console
 from lockhart.history import load_history, save_history
