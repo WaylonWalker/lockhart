@@ -1,8 +1,13 @@
+Screen {
+  align: center middle;
+  layers: main footer;
+}
+
 Request {
   layout: vertical;
   background: $boost;
   padding: 1;
-  margin: 1;
+  margin: 1 0;
   min-height: 100%;
   height: auto;
 }
@@ -35,17 +40,27 @@ Request {
   background: $background-lighten-2;
   border-bottom: solid peachpuff;
 }
-#results-header {
+#results-header,
+#request-header {
+  background: $primary-darken-2;
+  align: center middle;
+  text-align: center;
   margin-top: 1;
 }
 #response-text-container {
   height: auto;
   max-height: 40vh;
+  min-height: 4;
   background: $background-lighten-2;
+  border-left: wide $primary-darken-2;
+  border-right: wide $primary-darken-2;
+  border-bottom: wide $primary-darken-2;
 }
 #requests {
-  /* background: red; */
-  border-left: outer $secondary;
+  background: $boost;
+  border-left: wide $primary-darken-2;
+  border-right: wide $primary-darken-2;
+  border-bottom: wide $primary-darken-2;
   /* padding-left: 1; */
   margin-top: 0;
   height: auto;
@@ -63,8 +78,17 @@ Request {
 
 PromptSidebar {
   height: 100vh;
-  width: 20;
+  width: auto;
+  min-width: 20;
   background: $secondary-background-darken-2;
   dock: left;
   margin-right: 1;
+}
+
+PromptSidebar Button {
+  height: auto;
+  width: 18;
+}
+Footer {
+  layer: footer;
 }

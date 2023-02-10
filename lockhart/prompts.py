@@ -1,16 +1,16 @@
 import copy
 import os
+from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
-import time
-from datetime import datetime
-from pathlib import Path
 from typing import Optional, Union
 
 import openai
 import tomlkit
 
+import datetime
 from lockhart.config import config
 from lockhart.console import console
 from lockhart.history import load_history, save_history
@@ -92,7 +92,7 @@ def run_prompt(
 
 def template_prompt(prompt: dict, text: str) -> dict:
     for key in prompt:
-        console.log(f"templating {key}: {prompt[key]}")
+        console.log(f"templating {key}: {prompt[key].__repr__()}")
 
         if isinstance(prompt[key], str):
             template = get_jinja_env().from_string(prompt[key])
@@ -110,25 +110,33 @@ def template_prompt(prompt: dict, text: str) -> dict:
 
 def edit_prompt(prompt: dict) -> dict:
     editor = os.environ.get("EDITOR", "vim")
-    console.log(f"editing prompt with {editor}")
-    file = tempfile.NamedTemporaryFile(prefix="lockhart", suffix=".toml")
-    file.write(("# edit = true\n" + tomlkit.dumps(prompt)).encode())
-    file.seek(0)
-    st_mtime = os.stat(file.name).st_mtime  # create time by lockhart
-    initial_time = time.time()
-    proc = subprocess.Popen([editor, file.name])
-    proc.wait()
-    if os.stat(file.name).st_mtime == st_mtime:
-        console.log(os.stat(file.name).st_mtime)
-        console.log("st_mtime", st_mtime)
-        console.log("initial_time", initial_time)
-        console.log("editor quit")
-        return
-    console.log(os.stat(file.name).st_mtime)
-    console.log(os.stat(file.name).st_atime)
-    console.log(os.stat(file.name).st_ctime)
+    if not shutil.which(editor):
+        if os.name == "nt":
+            raise FileNotFoundError(
+                f"your configured %EDITOR% `{editor}` was not found on your %PATH%"
+            )
+        else:
+            raise FileNotFoundError(
+                f"your configured $EDITOR `{editor}` was not found on your $PATH"
+            )
 
-    prompt = tomlkit.loads(Path(file.name).read_text())
+    console.log(f"editing prompt with {editor}")
+    with tempfile.NamedTemporaryFile(prefix="lockhart", suffix=".toml") as file:
+        file.seek(0)
+        file.write(("# edit = true\n" + tomlkit.dumps(prompt)).encode())
+        file.flush()
+        st_mtime = os.stat(file.name).st_mtime  # create time by lockhart
+        try:
+            proc = subprocess.Popen([editor, file.name])
+        except FileNotFoundError:
+            console.log(f"{editor} is not installed")
+            return
+        proc.wait()
+        if os.stat(file.name).st_mtime == st_mtime:
+            # the file was not modified, return without running
+            return
+
+        prompt = tomlkit.loads(Path(file.name).read_text())
     console.log(f"updated prompt\n{prompt}")
     dry_run = bool(prompt.pop("dry_run", False))
     edit = bool(prompt.pop("edit", False))

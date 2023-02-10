@@ -8,6 +8,7 @@ from textual.reactive import reactive
 from textual.widgets import Button, Footer, Static
 
 from lockhart.config import config
+from lockhart.console import console
 from lockhart.history import load_history
 from lockhart.prompts import run_prompt
 
@@ -17,9 +18,15 @@ RESPONSE_KEYS = ["created", "choices", "usage"]
 
 class PromptSidebar(Static):
     def compose(self) -> ComposeResult:
+        key = [
+            b
+            for b in config["lockhart"]["tui"]["bindings"]
+            if b["action"] == "toggle_sidebar"
+        ][-1]["key"]
         yield Container(
+            Static(f"stored prompts ({key})"),
             *[
-                Button(prompt, id=f"{prompt}-button")
+                Button(prompt.replace("-", " ").title(), id=f"{prompt}-button")
                 for prompt in config["prompts"].keys()
             ],
             id="prompt-sidebar",
@@ -38,7 +45,9 @@ class Request(Static):
         self.myid = id
 
     def update_data(self):
-        self.log("updating")
+        self.log("updating data")
+        if self.data is None:
+            return
         self.query_one("#id", Static).update(str(self.myid))
         self.query_one("#date", Static).update(str(self.data["datetime"]))
         for key in REQUEST_KEYS:
@@ -102,16 +111,26 @@ class RequestApp(App):
         self._history
 
     def on_mount(self):
-        self.query_one(Request).update_data()
+        try:
+            self.query_one(Request).update_data()
+        except NoMatches:
+            console.log("could not find a Request")
         self.i = 0
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
         self.i = 0
-        yield Container(
-            Request(id=self.i, data=self.history[self.i]),
-            id="timers",
-        )
+        try:
+            yield Container(
+                Request(id=self.i, data=self.history[self.i]),
+                id="timers",
+            )
+        except IndexError:
+            self.log("history is empty")
+            yield Container(
+                Request(id=self.i, data=None),
+                id="timers",
+            )
         yield Footer()
 
     def action_next(self):
@@ -129,9 +148,12 @@ class RequestApp(App):
             self.i = 0
         if self.i < 0:
             self.i = len(self.history) - 1
-        self.query_one(Request).data = self.history[self.i]
-        self.query_one(Request).myid = self.i
-        self.query_one(Request).update_data()
+        try:
+            self.query_one(Request).data = self.history[self.i]
+            self.query_one(Request).myid = self.i
+            self.query_one(Request).update_data()
+        except IndexError:
+            console.log("history is empty")
 
     def action_toggle_dark(self) -> None:
         """An action to toggle dark mode."""
@@ -200,7 +222,10 @@ class RequestApp(App):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         prompt = event.button.id[:-7]
         self._driver.stop_application_mode()
-        run_prompt(prompt, edit=True)
+        self.log("running prompt")
+        self.log(prompt)
+        result = run_prompt(prompt, edit=True)
+        self.log(result)
         self._driver.start_application_mode()
         self.update_history()
         self.activate(i=0)
