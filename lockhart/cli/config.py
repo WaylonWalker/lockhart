@@ -1,8 +1,8 @@
 import typer
+from rich.console import Console
 
 from lockhart.cli.common import verbose_callback
 from lockhart.config import config as configuration
-from rich.console import Console
 
 config_app = typer.Typer()
 
