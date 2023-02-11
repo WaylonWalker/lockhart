@@ -36,7 +36,6 @@ def load_prompt(prompt: str) -> dict:
 def run_prompt(
     prompt_name: Union[str, dict], dry_run: bool = False, edit: bool = False
 ) -> Optional[str]:
-
     console.log("running prompt")
     text = ""
 

@@ -232,7 +232,6 @@ class RequestApp(App):
 
 
 def run_app():
-
     import os
     import sys
 
